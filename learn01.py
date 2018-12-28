@@ -12,19 +12,7 @@ import nnabla.functions as F
 import nnabla.parametric_functions as PF
 import nnabla.solvers as S
 import nnabla.utils.save as save
-
-# arguments
-parser = argparse.ArgumentParser()
-parser.add_argument("--mat",type=str)
-parser.add_argument("--rhs",type=str)
-parser.add_argument("--sol",type=str)
-parser.add_argument("--batch",type=int,default=64)
-parser.add_argument("--num",type=int,default=1000)
-parser.add_argument("--max_iter",type=int,default=1000)
-parser.add_argument("--weight_decay",type=float,default=1.0e-5)
-parser.add_argument("--learning_rate",type=float,default=1.0e-3)
-args = parser.parse_args()
-
+                
 #read size
 def get_size(path_mat):
     mat = np.loadtxt(path_mat,comments="%")
@@ -141,7 +129,7 @@ def network(x,n,nnz,test=False):
     return h
 
 #training
-def train():
+def train(args):
     n,nnz = get_size(args.mat+"0.mtx")
     print "(n,nnz)=",n,nnz
 
@@ -195,8 +183,31 @@ def train():
         print i, loss.d
 
 if __name__ == "__main__" :
+    # arguments
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--mat",type=str)
+    parser.add_argument("--rhs",type=str)
+    parser.add_argument("--sol",type=str)
+    parser.add_argument("--batch",type=int,default=64)
+    parser.add_argument("--num",type=int,default=1000)
+    parser.add_argument("--max_iter",type=int,default=1000)
+    parser.add_argument("--weight_decay",type=float,default=1.0e-5)
+    parser.add_argument("--learning_rate",type=float,default=1.0e-3)
+    parser.add_argument("-c","--c",type=str,default="cpu")
+    parser.add_argument("--device_id",type=int,default=0)
+    parser.add_argument("--type-config", "-t", type=str, default='float',
+                        help='Type of computation. e.g. "float", "half".')
+    args = parser.parse_args()
+    
+    # Get context.
+    from nnabla.ext_utils import get_extension_context
+    logger.info("Running in %s" % args.c)
+    ctx = get_extension_context(
+        args.c, device_id=args.device_id, type_config=args.type_config)
+    nn.set_default_context(ctx)
+    
     # train
-    train()
+    train(args)
 
 
 
