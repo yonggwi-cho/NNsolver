@@ -1,4 +1,4 @@
 # NNsolver
 
-Linear solver by Nueral-Network
+Linear solver by Nueral-Network¥n
 use NNabla library 
